@@ -1,9 +1,28 @@
 
 import { Message } from 'discord.js';
 
+const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
 const config = require('./config.json')
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.ts'));
+
+for (const file of commandFiles) {
+    const commandFile = require(`./commands/${file}`);
+
+    client.commands.set(commandFile.command.name, commandFile.command);
+}
+
+/*
+    TODO
+
+
+
+
+*/
 
 client.once('ready', () => {
     console.log('Armorer at his station.');
@@ -15,18 +34,19 @@ client.on('message', (message: Message) => {
     }
 
     const args = message.content.slice(config.prefix.length).split(/ +/);
-    const command = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
 
-    if (command === 'avatar') {
-        let target = message.author;
-        let preamble = 'here\'s the link to your avatar:';
+    if (!client.commands.has(commandName)) {
+        return;
+    }
 
-        if (message.mentions.users.size) {
-            target = message.mentions.users.first();
-            preamble = `here's the link to ${ target.username }'s avatar:`;
-        }
+    const command = client.commands.get(commandName);
 
-        message.reply(`${ preamble } <${ target.displayAvatarURL({ format: 'png', dynamic: true }) }>`);
+    try {
+        command.get(commandName).execute(message, args);
+    } catch (error) {
+        console.error(error);
+        message.reply('there was an error while performing your request.');
     }
 });
 
