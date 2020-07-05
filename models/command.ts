@@ -1,10 +1,11 @@
-import { Message } from 'discord.js';
+import { Client, Message } from 'discord.js';
 
 export interface Command {
 
     name: string;
     usage: string;
+    argCount?: number;
 
-    execute(message: Message, args: string[]);
+    execute(client: Client, message: Message, args: string[]);
 
 }

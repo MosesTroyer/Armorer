@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Client, Message } from 'discord.js';
 
 import { Command } from '../models/command';
 
@@ -7,7 +7,7 @@ class Avatar implements Command {
     name = 'avatar';
     usage = 'Use !avatar by itself or with a mention to get a link to a Discord avatar.'
 
-    execute(message: Message, args: string[]) {
+    execute(client: Client, message: Message, args: string[]) {
         let target = message.author;
         let preamble = 'here\'s the link to your avatar:';
 

@@ -42,8 +42,13 @@ client.on('message', (message: Message) => {
 
     const command = client.commands.get(commandName);
 
+    if (command.argCount && args.length < command.argCount) {
+        message.reply(`Not enough arguments given! Usage: ${ command.usage }`)
+        return;
+    }
+
     try {
-        command.get(commandName).execute(message, args);
+        command.execute(client, message, args);
     } catch (error) {
         console.error(error);
         message.reply('there was an error while performing your request.');
